@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  sbox-commits:
+    container_name: sbox-commits
+    restart: always
+    image: sbox-commits
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: production
