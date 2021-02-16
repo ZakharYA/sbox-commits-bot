@@ -1,6 +1,6 @@
 {
 	"name": "sbox-commits-bot",
-	"version": "1.0.4",
+	"version": "1.0.0",
 	"description": "",
 	"main": "index.js",
 	"scripts": {
@@ -22,7 +22,7 @@
 	"dependencies": {
 		"@sentry/node": "^6.0.2",
 		"config": "^3.3.3",
-		"facepunch-commits": "^2.1.15",
+		"facepunch-commits": "^2.1.16",
 		"node-cron": "^2.0.3",
 		"toml": "^3.0.0",
 		"vk-io": "^4.1.3"
