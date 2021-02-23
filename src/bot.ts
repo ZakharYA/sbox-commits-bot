@@ -21,19 +21,29 @@ const TypeInvites = {
 };
 
 const checkInvite = (context: MessageContext<Record<string, any>>) => {
+	console.log('check invite');
 	vk.api.call('groups.isMember', {
 		group_id: GROUP_ID,
 		user_id: context.senderId
 	})
 		.then((result) => {
+			console.log('groups.isMember then.');
 			if (result) return context.send('Добро пожаловать в Сити 17.');
+			console.log('is not join group');
 
 			vk.api.call('messages.removeChatUser', {
 				chat_id: context.peerId - 2000000000,
 				user_id: context.senderId
 			}).then((result) => {
+				console.log('+kik');
 				if (result) return context.send('Не прошёл проверку на bublikpro.');
+			})
+			.catch(err => {
+				console.log(err);
 			});
+		})
+		.catch((err) => {
+			console.log(err);
 		});
 };
 
