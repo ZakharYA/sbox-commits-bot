@@ -1,9 +1,47 @@
 import { sendSboxChat, vk } from './vk';
 import Random from './modules/random';
+import { MessageContext } from 'vk-io';
+
+let GROUP_ID = 0;
+
+(() => {
+	vk.api.call('groups.getById', {})
+		.then((response) => {
+			GROUP_ID = response[0].id;
+		})
+		.catch(() => {
+			console.error('bad token');
+			process.exit(1);
+		});
+})();
+
+const TypeInvites = {
+	invite: 'chat_invite_user',
+	invite_link: 'chat_invite_user_by_link'
+};
+
+const checkInvite = (context: MessageContext<Record<string, any>>) => {
+	vk.api.call('groups.isMember', {
+		group_id: GROUP_ID,
+		user_id: context.senderId
+	})
+		.then((result) => {
+			if (result) return context.send('Добро пожаловать в Сити 17.');
+
+			vk.api.call('messages.removeChatUser', {
+				chat_id: context.peerId - 2000000000,
+				user_id: context.senderId
+			}).then((result) => {
+				if (result) return context.send('Не прошёл проверку на bublikpro.');
+			});
+		});
+};
 
 vk.updates.on('message', async (context) => {
 	if (!context.text) return;
 	if (!context.isChat) return;
+
+	if (context.eventType === TypeInvites.invite || context.eventType === TypeInvites.invite_link) return checkInvite(context);
 
 	const args = context.text.split(' ');
 
