@@ -51,6 +51,7 @@ vk.updates.on('message', async (context) => {
 	if (!context.text) return;
 	if (!context.isChat) return;
 	console.log('event', context.eventType);
+	console.log('context', context);
 	if (context.eventType === TypeInvites.invite || context.eventType === TypeInvites.invite_link) return checkInvite(context);
 
 	const args = context.text.split(' ');
