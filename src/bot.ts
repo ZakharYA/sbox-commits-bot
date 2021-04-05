@@ -2,6 +2,8 @@ import { sendSboxChat, vk } from './vk';
 import Random from './modules/random';
 import { MessageContext } from 'vk-io';
 
+type IContext = MessageContext<Record<string, any>>;
+
 let GROUP_ID = 0;
 
 (() => {
@@ -20,6 +22,8 @@ const TypeInvites = {
 	invite_link: 'chat_invite_user_by_link'
 };
 
+const wordsASK = ['Да', 'Нет', 'Иди нахуй'];
+
 const checkInvite = (context: MessageContext<Record<string, any>>) => {
 	vk.api.call('groups.isMember', {
 		group_id: GROUP_ID,
@@ -37,6 +41,39 @@ const checkInvite = (context: MessageContext<Record<string, any>>) => {
 		});
 };
 
+const commands:{[key: string]: (context: IContext, args: string[]) => void} = {};
+
+const createCommand = (commandName: string, callback: (context: IContext, args: string[]) => void) => {
+	commands[commandName] = callback;
+};
+
+createCommand('try', context =>
+	context.reply(Random(0, 1) ? 'Удачно.' : 'Неудачно.'));
+
+createCommand('ask', (context, args) => {
+	if (!args[1]) return;
+
+	const text = args.splice(0, 1) && args.join(' ');
+	if (text.length < 2 || text.slice(-1) !== '?') return context.reply('Длина вопроса должна быть > 2 и чтобы он заканчивался знаком вопроса.');
+
+	return context.reply(`${wordsASK[Random(0, wordsASK.length - 1)]}.`);
+});
+
+createCommand('что', (context, args) => {
+	if (!args[1]) return;
+
+	const ans = args[1];
+	const text = args.splice(0, 2) && args.join(' ');
+	if (!text.length) return;
+
+	const findText = text.split(' или ');
+	if (findText.length === 1) return;
+
+	const reText = findText[Random(0, findText.length - 1)];
+
+	return context.reply(`Я думаю, что ${reText} ${ans}.`);
+});
+
 vk.updates.on('message', async (context) => {
 	if (!context.isChat) return;
 
@@ -46,27 +83,8 @@ vk.updates.on('message', async (context) => {
 
 	const args = context.text.split(' ');
 
-	if (args[0] === '/try')
-		return await context.reply(Random(0, 1) ? 'Удачно.' : 'Неудачно.');
-
-	if (args[0] === '/ask' && args[1]) {
-		const text = args.splice(0, 1) && args.join(' ');
-		if (text.length < 2 || text.slice(-1) !== '?') return context.reply('Длина вопроса должна быть > 2 и чтобы он заканчивался знаком вопроса.');
-
-		return await context.reply(Random(0, 1) ? Random(0, 1) ? 'Да.' : 'Иди нахуй.' : 'Нет.');
-	}
-
-	if (args[0] === '/что' && args[1]) {
-		const ans = args[1];
-		const text = args.splice(0, 2) && args.join(' ');
-		if (!text.length) return;
-
-		const findText = text.split(' или ');
-		if (findText.length === 1) return;
-
-		const reText = findText[Random(0, findText.length - 1)];
-
-		await context.reply(`Я думаю, что ${reText} ${ans}.`);
+	if (args[0].startsWith('/')) {
+		if (commands[args[0].slice(1)]) return commands[args[0].slice(1)](context, args);
 	}
 });
 
