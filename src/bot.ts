@@ -6,6 +6,10 @@ type IContext = MessageContext<Record<string, any>>;
 
 let GROUP_ID = 0;
 
+const isNumeric = (n: string) => {
+	return !isNaN(parseFloat(n)) && isFinite(Number(n));
+};
+
 (() => {
 	vk.api.call('groups.getById', {})
 		.then((response) => {
@@ -72,6 +76,18 @@ createCommand('что', (context, args) => {
 	const reText = findText[Random(0, findText.length - 1)];
 
 	return context.reply(`Я думаю, что ${reText} ${ans}.`);
+});
+
+createCommand('рандом', (context, args) => {
+	if (!args[1] || !args[2]) return context.reply('Не задано минимальное/максимальное значение.');
+
+	if (!isNumeric(args[1]) || !isNumeric(args[2])) return context.reply('Значение должно быть числом.');
+
+	const min = Number(args[1]), max = Number(args[2]);
+
+	if (min > max) return context.reply('Минимальное число > максимального.');
+
+	return context.reply(`Результат: ${Random(min, max)}`);
 });
 
 vk.updates.on('message', async (context) => {
