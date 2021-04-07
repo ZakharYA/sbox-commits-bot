@@ -29,7 +29,7 @@ const TypeInvites = {
 
 const wordsASK = ['Да', 'Нет', 'Иди нахуй'];
 
-const checkInvite = (context: MessageContext<Record<string, any>>) => {
+const checkInvite = (context: IContext) => {
 	vk.api.call('groups.isMember', {
 		group_id: GROUP_ID,
 		user_id: context.senderId
@@ -106,7 +106,5 @@ vk.updates.on('message', async (context) => {
 });
 
 vk.updates.start()
-	.then(() => {
-		return TGAPI.sendMessage(`Bot started.\nTime: ${Date()}`);
-	})
-	.catch(console.error);
+	.then(() => TGAPI.sendMessage(`Bot started.\nTime: ${Date()}`))
+	.catch((err) => TGAPI.sendMessage(`Failed start bot.\nError: ${JSON.stringify(err)}`));

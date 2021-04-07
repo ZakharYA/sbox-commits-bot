@@ -1,6 +1,5 @@
 import FacepunchCommits from 'facepunch-commits';
 import cron from 'node-cron';
-import config from 'config';
 import translate from './translate';
 import { sendSboxChat } from './vk';
 import Random from './modules/random';
@@ -14,18 +13,15 @@ const commits = new FacepunchCommits();
 let commitsCount = 0;
 
 
-const ADMIN_ID = config.get('vk.adminId');
-
 const newCommit = async (commit: ICommit) => {
 	commitsCount++;
 
-	let translated = 'bad translate';
+	let translated = '';
 	await translate(commit.message)
-		.then((result) => {
-			translated = result;
-		})
-		.catch((err) => {
-			console.error(err);
+		.then(result => translated = result)
+		.catch(err => {
+			TGAPI.sendMessage(`Bad translate.\nError: ${JSON.stringify(err)}`);
+			translated = 'Не удалось перевести.';
 		});
 
 	await sendSboxChat(`Новый коммит в ${commit.repo}!\nАвтор: ${commit.user.name}\nBranch: ${commit.branch}\nСообщение:\n${commit.message}\n\nПеревод:\n${translated}`);
@@ -45,13 +41,6 @@ commits.catchRequest(async (err) => {
 	let stringifyErr;
 	if (!err.message) stringifyErr = JSON.stringify(err);
 
-	if (typeof ADMIN_ID !== 'number') return; // fuck
-
-	// await vk.api.messages.send({
-	// 	user_id: ADMIN_ID,
-	// 	random_id: 0,
-	// 	message: `Error request!\n${err.message ? err.message : stringifyErr}`
-	// });
 	return TGAPI.sendMessage(`Error request!\n${err.message ? err.message : stringifyErr}`);
 });
 
