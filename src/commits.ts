@@ -13,12 +13,6 @@ const commits = new FacepunchCommits();
 
 let commitsCount = 0;
 
-const subscribed = [
-	'sandbox.source',
-	'Fad',
-	'sandbox.source2',
-	'sbox'
-];
 
 const ADMIN_ID = config.get('vk.adminId');
 
@@ -41,8 +35,10 @@ const newCommit = async (commit: ICommit) => {
 	}
 };
 
-subscribed.map((value) => {
-	commits.subscribeToRepository(value, newCommit);
+commits.subscribeToAll(commit => {
+	if (commit.repo.indexOf('sbox') === -1) return;
+
+	return newCommit(commit);
 });
 
 commits.catchRequest(async (err) => {
