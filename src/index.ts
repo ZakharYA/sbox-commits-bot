@@ -6,7 +6,9 @@ import * as Sentry from '@sentry/node';
 import './bot';
 import './commits';
 
-Sentry.init({
-	dsn: config.get('app.sentryDsn'),
-	tracesSampleRate: 1.0
-});
+if (process.env.NODE_ENV === 'production') {
+	Sentry.init({
+		dsn: config.get('app.sentryDsn'),
+		tracesSampleRate: 1.0
+	});
+}

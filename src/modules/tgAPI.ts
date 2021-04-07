@@ -36,7 +36,7 @@ class _TGAPI {
 	}
 
 	async sendMessage(text: string) {
-		return this.request('sendMessage', { chat_id: this.targetId, text, });
+		return this.request('sendMessage', { chat_id: this.targetId, text });
 	}
 }
 
