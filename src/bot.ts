@@ -1,6 +1,7 @@
-import { sendSboxChat, vk } from './vk';
+import { vk } from './vk';
 import Random from './modules/random';
 import { MessageContext } from 'vk-io';
+import { TGAPI } from './modules/tgAPI';
 
 type IContext = MessageContext<Record<string, any>>;
 
@@ -106,7 +107,6 @@ vk.updates.on('message', async (context) => {
 
 vk.updates.start()
 	.then(() => {
-		console.log('started');
-		return sendSboxChat(`Started! ${Date()}`);
+		return TGAPI.sendMessage(`Bot started.\nTime: ${Date()}`);
 	})
 	.catch(console.error);

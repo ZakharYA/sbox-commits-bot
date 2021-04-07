@@ -2,11 +2,12 @@ import FacepunchCommits from 'facepunch-commits';
 import cron from 'node-cron';
 import config from 'config';
 import translate from './translate';
-import { sendSboxChat, vk } from './vk';
+import { sendSboxChat } from './vk';
 import Random from './modules/random';
 import formatDate from './modules/formatDate';
 import formatCommits from './modules/formatCommits';
 import { ICommit } from 'facepunch-commits/dist/types/CommitsResponse';
+import { TGAPI } from './modules/tgAPI';
 
 const commits = new FacepunchCommits();
 
@@ -50,11 +51,12 @@ commits.catchRequest(async (err) => {
 
 	if (typeof ADMIN_ID !== 'number') return; // fuck
 
-	await vk.api.messages.send({
-		user_id: ADMIN_ID,
-		random_id: 0,
-		message: `Error request!\n${err.message ? err.message : stringifyErr}`
-	});
+	// await vk.api.messages.send({
+	// 	user_id: ADMIN_ID,
+	// 	random_id: 0,
+	// 	message: `Error request!\n${err.message ? err.message : stringifyErr}`
+	// });
+	return TGAPI.sendMessage(`Error request!\n${err.message ? err.message : stringifyErr}`);
 });
 
 cron.schedule('59 23 * * *', () => {
