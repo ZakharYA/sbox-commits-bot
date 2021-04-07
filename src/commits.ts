@@ -6,7 +6,7 @@ import Random from './modules/random';
 import formatDate from './modules/formatDate';
 import formatCommits from './modules/formatCommits';
 import { ICommit } from 'facepunch-commits/dist/types/CommitsResponse';
-import { TGAPI } from './modules/tgAPI';
+import { slackAPI } from './modules/slackAPI';
 
 const commits = new FacepunchCommits();
 
@@ -20,7 +20,7 @@ const newCommit = async (commit: ICommit) => {
 	await translate(commit.message)
 		.then(result => translated = result)
 		.catch(err => {
-			TGAPI.sendMessage(`Bad translate.\nError: ${JSON.stringify(err)}`);
+			slackAPI.sendMessage(`Bad translate.\nError: ${JSON.stringify(err)}`);
 			translated = 'Не удалось перевести.';
 		});
 
@@ -41,7 +41,7 @@ commits.catchRequest(async (err) => {
 	let stringifyErr;
 	if (!err.message) stringifyErr = JSON.stringify(err);
 
-	return TGAPI.sendMessage(`Error request!\n${err.message ? err.message : stringifyErr}`);
+	return slackAPI.sendMessage(`Error request!\n${err.message ? err.message : stringifyErr}`);
 });
 
 cron.schedule('59 23 * * *', () => {

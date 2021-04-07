@@ -1,7 +1,7 @@
 import { vk } from './vk';
 import Random from './modules/random';
 import { MessageContext } from 'vk-io';
-import { TGAPI } from './modules/tgAPI';
+import { slackAPI } from './modules/slackAPI';
 
 type IContext = MessageContext<Record<string, any>>;
 
@@ -106,5 +106,5 @@ vk.updates.on('message', async (context) => {
 });
 
 vk.updates.start()
-	.then(() => TGAPI.sendMessage(`Bot started.\nTime: ${Date()}\nENV: ${process.env.NODE_ENV || 'dev'}`))
-	.catch((err) => TGAPI.sendMessage(`Failed start bot.\nError: ${JSON.stringify(err)}\nENV: ${process.env.NODE_ENV || 'dev'}`));
+	.then(() => slackAPI.sendMessage(`Bot started.\nTime: ${Date()}\nENV: ${process.env.NODE_ENV || 'dev'}`))
+	.catch((err) => slackAPI.sendMessage(`Failed start bot.\nError: ${JSON.stringify(err)}\nENV: ${process.env.NODE_ENV || 'dev'}`));
