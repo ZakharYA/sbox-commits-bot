@@ -12,7 +12,6 @@ const commits = new FacepunchCommits();
 
 let commitsCount = 0;
 
-
 const newCommit = async (commit: ICommit) => {
 	commitsCount++;
 
